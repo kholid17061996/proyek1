@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '@/utils/supabase/client'
-import { Plus, Edit2, Trash2, Search, Loader2, Users, FileUp, Download } from 'lucide-react'
+import { Plus, Edit2, Trash2, Search, Loader2, Users, FileUp, Download, ArrowUpDown } from 'lucide-react'
 import * as XLSX from 'xlsx'
 
 // Types based on schema
@@ -14,6 +14,7 @@ type Santri = {
   kelas_id: string
   pengajar_id: string
   tanggal_masuk: string
+  created_at?: string
   status: string
   kelas: { nama: string }
   pengajar: { nama: string }
@@ -32,6 +33,8 @@ export default function DataSantriPage() {
   const [loading, setLoading] = useState(true)
   const [isUploading, setIsUploading] = useState(false)
   const [search, setSearch] = useState('')
+  const [sortBy, setSortBy] = useState('urut')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
   const fileInputRef = useRef<HTMLInputElement>(null)
   
   // Modal states
@@ -169,28 +172,77 @@ export default function DataSantriPage() {
     }
   }
 
-  const handleDownloadTemplate = () => {
-    const ws = XLSX.utils.json_to_sheet([
-      {
-        nama: 'Ahmad Abdullah',
+  const handleDownloadTemplate = async () => {
+    try {
+      const ExcelJS = (await import('exceljs')).default
+      const { saveAs } = (await import('file-saver')).default || await import('file-saver')
+
+      const workbook = new ExcelJS.Workbook()
+      const worksheet = workbook.addWorksheet('Template Siswa')
+
+      // Define columns
+      worksheet.columns = [
+        { header: 'NIS / Kode', key: 'nis', width: 15 },
+        { header: 'Nama Siswa', key: 'nama', width: 25 },
+        { header: 'Kelas', key: 'kelas', width: 20 },
+        { header: 'Pengajar / Musyrif', key: 'pengajar', width: 25 },
+        { header: 'Status', key: 'status', width: 15 }
+      ]
+
+      // Header styling
+      worksheet.getRow(1).font = { bold: true }
+
+      // Add a sample row
+      worksheet.addRow({
         nis: '12345678',
-        nama_kelas: 'Kelas Abu Bakar',
-        tanggal_masuk: '2026-08-01'
+        nama: 'Ahmad Abdullah',
+        kelas: kelasList[0]?.nama || 'Kelas Abu Bakar',
+        pengajar: pengajarList[0]?.nama || 'Ustaz Fulan',
+        status: 'aktif'
+      })
+
+      // Prepare dropdown lists
+      // ExcelJS formulae for list data validation require comma-separated strings inside quotes: '"item1,item2"'
+      const kelasFormula = `"${kelasList.map(k => k.nama).join(',')}"`
+      const pengajarFormula = `"${pengajarList.map(p => p.nama).join(',')}"`
+      const statusFormula = '"aktif,nonaktif"'
+
+      // Apply data validation to rows 2 to 1000
+      for (let i = 2; i <= 1000; i++) {
+        // Dropdown for Kelas (Column C)
+        if (kelasList.length > 0) {
+          worksheet.getCell(`C${i}`).dataValidation = {
+            type: 'list',
+            allowBlank: true,
+            formulae: [kelasFormula]
+          }
+        }
+        
+        // Dropdown for Pengajar (Column D)
+        if (pengajarList.length > 0) {
+          worksheet.getCell(`D${i}`).dataValidation = {
+            type: 'list',
+            allowBlank: true,
+            formulae: [pengajarFormula]
+          }
+        }
+
+        // Dropdown for Status (Column E)
+        worksheet.getCell(`E${i}`).dataValidation = {
+          type: 'list',
+          allowBlank: true,
+          formulae: [statusFormula]
+        }
       }
-    ])
-    
-    // Add column widths
-    const wscols = [
-      { wch: 25 }, // nama
-      { wch: 15 }, // nis
-      { wch: 20 }, // nama_kelas
-      { wch: 15 }  // tanggal_masuk
-    ]
-    ws['!cols'] = wscols
-    
-    const wb = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(wb, ws, 'Template Siswa')
-    XLSX.writeFile(wb, 'template_data_siswa.xlsx')
+
+      // Generate file and trigger download
+      const buffer = await workbook.xlsx.writeBuffer()
+      saveAs(new Blob([buffer]), 'template_data_siswa.xlsx')
+
+    } catch (error) {
+      console.error('Error generating template:', error)
+      alert('Gagal membuat template Excel.')
+    }
   }
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -218,22 +270,36 @@ export default function DataSantriPage() {
 
         // Process each row
         for (const row of data) {
-          if (!row.nama) continue
+          const nama = row['Nama Siswa'] || row.nama_siswa || row.nama
+          if (!nama) continue
 
-          // Find class ID if nama_kelas is provided
+          const nis = row['NIS / Kode'] || row.nis_kode || row.nis
+          const kelas = row['Kelas'] || row.kelas || row.nama_kelas
+          const pengajar = row['Pengajar / Musyrif'] || row.pengajar
+          const status = row['Status'] || row.status || 'aktif'
+
+          // Find class ID if provided
           let assignedKelasId = null
-          if (row.nama_kelas) {
-            const foundKelas = kelasList.find(k => k.nama.toLowerCase() === row.nama_kelas.toString().toLowerCase())
+          if (kelas) {
+            const foundKelas = kelasList.find(k => k.nama.toLowerCase() === kelas.toString().toLowerCase())
             if (foundKelas) assignedKelasId = foundKelas.id
+          }
+
+          // Find pengajar ID if provided
+          let assignedPengajarId = null
+          if (pengajar) {
+            const foundPengajar = pengajarList.find(p => p.nama.toLowerCase() === pengajar.toString().toLowerCase())
+            if (foundPengajar) assignedPengajarId = foundPengajar.id
           }
 
           const payload = {
             kode_santri: `ST-${Math.floor(10000 + Math.random() * 90000)}`,
-            nis: row.nis ? row.nis.toString() : null,
-            nama: row.nama,
+            nis: nis ? nis.toString() : null,
+            nama: nama,
             kelas_id: assignedKelasId,
-            tanggal_masuk: row.tanggal_masuk || new Date().toISOString().split('T')[0],
-            status: 'aktif'
+            pengajar_id: assignedPengajarId,
+            tanggal_masuk: new Date().toISOString().split('T')[0],
+            status: status.toString().toLowerCase()
           }
 
           const { error } = await supabase.from('santri').insert([payload])
@@ -255,11 +321,27 @@ export default function DataSantriPage() {
     reader.readAsBinaryString(file)
   }
 
-  const filteredSantri = santriList.filter(s => 
-    s.nama.toLowerCase().includes(search.toLowerCase()) ||
-    s.nis?.toLowerCase().includes(search.toLowerCase()) ||
-    s.kode_santri.toLowerCase().includes(search.toLowerCase())
-  )
+  const filteredSantri = [...santriList]
+    .filter(s => 
+      s.nama.toLowerCase().includes(search.toLowerCase()) ||
+      s.nis?.toLowerCase().includes(search.toLowerCase()) ||
+      s.kode_santri.toLowerCase().includes(search.toLowerCase())
+    )
+    .sort((a, b) => {
+      let comparison = 0
+      if (sortBy === 'nis') {
+        comparison = (a.nis || '').localeCompare(b.nis || '')
+      } else if (sortBy === 'nama') {
+        comparison = a.nama.localeCompare(b.nama)
+      } else if (sortBy === 'kelas') {
+        comparison = (a.kelas?.nama || '').localeCompare(b.kelas?.nama || '')
+      } else if (sortBy === 'pengajar') {
+        comparison = (a.pengajar?.nama || '').localeCompare(b.pengajar?.nama || '')
+      } else if (sortBy === 'urut') {
+        comparison = (a.created_at || '').localeCompare(b.created_at || '')
+      }
+      return sortOrder === 'asc' ? comparison : -comparison
+    })
 
   return (
     <div className="space-y-6">
@@ -315,12 +397,34 @@ export default function DataSantriPage() {
               className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emas focus:border-emas"
             />
           </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-500 font-medium">Urut Berdasarkan:</span>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emas focus:border-emas bg-white cursor-pointer"
+            >
+              <option value="urut">Nomer Urut</option>
+              <option value="nis">NIS / Kode</option>
+              <option value="nama">Nama Siswa</option>
+              <option value="kelas">Kelas</option>
+              <option value="pengajar">Pengajar / Musyrif</option>
+            </select>
+            <button
+              onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+              className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-600 transition-colors"
+              title={sortOrder === 'asc' ? 'Urutkan Menurun' : 'Urutkan Menaik'}
+            >
+              <ArrowUpDown size={18} />
+            </button>
+          </div>
         </div>
         
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50 text-gray-600 text-sm border-b border-gray-100">
+                <th className="p-4 font-semibold w-16">No.</th>
                 <th className="p-4 font-semibold">NIS / Kode</th>
                 <th className="p-4 font-semibold">Nama Siswa</th>
                 <th className="p-4 font-semibold">Kelas</th>
@@ -332,20 +436,21 @@ export default function DataSantriPage() {
             <tbody className="divide-y divide-gray-100">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-gray-500">
+                  <td colSpan={7} className="p-8 text-center text-gray-500">
                     <Loader2 className="animate-spin mx-auto mb-2" size={24} />
                     Memuat data...
                   </td>
                 </tr>
               ) : filteredSantri.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-gray-500">
+                  <td colSpan={7} className="p-8 text-center text-gray-500">
                     Belum ada data siswa yang ditemukan.
                   </td>
                 </tr>
               ) : (
-                filteredSantri.map((santri) => (
+                filteredSantri.map((santri, index) => (
                   <tr key={santri.id} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="p-4 text-gray-500">{index + 1}</td>
                     <td className="p-4">
                       <div className="font-medium text-gray-900">{santri.nis || '-'}</div>
                       <div className="text-xs text-gray-500 font-mono">{santri.kode_santri}</div>

@@ -130,7 +130,7 @@ export default function Home() {
               <BookOpen size={32} />
             </div>
             <h2 className="text-3xl font-bold text-slate">Sign in</h2>
-            <p className="text-gray-500 mt-2 text-sm text-center">to continue to your dashboard</p>
+            <p className="text-slate/80 font-medium mt-2 text-sm text-center">to continue to your dashboard</p>
           </div>
 
           {/* Role Toggle */}
@@ -195,7 +195,7 @@ export default function Home() {
               <div className="flex items-center justify-between px-1 pt-1">
                 <label className="flex items-center gap-2 cursor-pointer group">
                   <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-slate focus:ring-slate cursor-pointer" />
-                  <span className="text-sm text-gray-600 group-hover:text-slate transition-colors">Remember me</span>
+                  <span className="text-sm font-medium text-slate/80 group-hover:text-slate transition-colors">Remember me</span>
                 </label>
                 <a href="#" className="text-sm text-slate font-semibold hover:text-[#0a3ca3] transition-colors">
                   Forgot password?

@@ -35,7 +35,7 @@ export default function PengajarLayout({
   const navigation = [
     { name: 'Dashboard', href: '/pengajar', icon: LayoutDashboard },
     { name: 'Input Mutaba\'ah Harian', href: '/pengajar/mutabaah', icon: CheckSquare },
-    { name: 'Target & Pencapaian Siswa', href: '/pengajar/setoran', icon: BookOpen },
+    { name: 'Target & Capaian Siswa', href: '/pengajar/setoran', icon: BookOpen },
   ]
 
   const handleLogout = async () => {
