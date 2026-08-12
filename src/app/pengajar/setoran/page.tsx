@@ -269,8 +269,17 @@ export default function TargetHafalanPage() {
                 placeholder="Cari santri..." 
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm text-gray-700 placeholder-gray-400 transition-shadow"
+                className="w-full pl-9 pr-10 py-2.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm text-gray-700 placeholder-gray-400 transition-shadow"
               />
+              {search && (
+                <button
+                  type="button"
+                  onClick={() => setSearch('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X size={16} />
+                </button>
+              )}
             </div>
           </div>
           
@@ -485,12 +494,14 @@ export default function TargetHafalanPage() {
                             <div className={`w-2 h-10 rounded-full ${
                               capaian.jenis_setoran === 'hafalan_baru' ? 'bg-teal-500' :
                               capaian.jenis_setoran === 'murojaah' ? 'bg-blue-500' : 
-                              capaian.jenis_setoran === 'tasmi' ? 'bg-purple-500' : 'bg-pink-500'
+                              capaian.jenis_setoran === 'tasmi' ? 'bg-purple-500' :
+                              capaian.jenis_setoran === 'doa_harian' ? 'bg-pink-500' :
+                              capaian.jenis_setoran === 'hadits' ? 'bg-emerald-500' : 'bg-orange-500'
                             }`}></div>
                             <div>
-                              <p className="text-sm font-bold text-gray-900">{capaian.surat} <span className="text-gray-500 font-normal">(Ayat {capaian.ayat_mulai}-{capaian.ayat_selesai})</span></p>
+                              <p className="text-sm font-bold text-gray-900">{capaian.surat} {capaian.jenis_setoran !== 'doa_harian' && capaian.jenis_setoran !== 'hadits' && <span className="text-gray-500 font-normal">(Ayat {capaian.ayat_mulai}-{capaian.ayat_selesai})</span>}</p>
                               <p className="text-[10px] text-gray-500 font-medium uppercase mt-0.5">
-                                {capaian.jenis_setoran.replace('_', ' ')} • {new Date(capaian.tanggal_setoran).toLocaleDateString('id-ID', {day: 'numeric', month: 'short'})}
+                                {capaian.jenis_setoran === 'doa_harian' ? 'Do\'a Harian' : capaian.jenis_setoran === 'hadits' ? 'Hafalan Hadits' : capaian.jenis_setoran.replace('_', ' ')} • {new Date(capaian.tanggal_setoran).toLocaleDateString('id-ID', {day: 'numeric', month: 'short'})}
                               </p>
                             </div>
                           </div>

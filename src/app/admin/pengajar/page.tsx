@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/utils/supabase/client'
 import { Plus, Edit2, Trash2, Search, Loader2, Key } from 'lucide-react'
-import { createPengajarAccount } from '@/app/actions/auth'
+import { createPengajarAccount, updatePengajarAuth } from '@/app/actions/auth'
 
 type Pengajar = {
   id: string
@@ -42,6 +42,7 @@ export default function DataPengajarPage() {
   // Auth states
   const [profileId, setProfileId] = useState<string>('')
   const [buatAkunOtomatis, setBuatAkunOtomatis] = useState(false)
+  const [ubahDataLogin, setUbahDataLogin] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
@@ -81,6 +82,15 @@ export default function DataPengajarPage() {
       setStatus(pengajar.status)
       setProfileId(pengajar.profile_id || '')
       setBuatAkunOtomatis(false)
+      setUbahDataLogin(false)
+      if (pengajar.profile_id) {
+        const p = profiles.find(x => x.id === pengajar.profile_id)
+        if (p) setEmail(p.email)
+        else setEmail('')
+      } else {
+        setEmail('')
+      }
+      setPassword('')
     } else {
       setEditId(null)
       setNama('')
@@ -90,6 +100,7 @@ export default function DataPengajarPage() {
       setStatus('aktif')
       setProfileId('')
       setBuatAkunOtomatis(false)
+      setUbahDataLogin(false)
       setEmail('')
       setPassword('')
     }
@@ -135,6 +146,15 @@ export default function DataPengajarPage() {
     }
 
     if (editId) {
+      if (ubahDataLogin && profileId) {
+        const updateAuth = await updatePengajarAuth(profileId, email, password)
+        if (updateAuth.error) {
+          alert(updateAuth.error)
+          setIsSubmitting(false)
+          return
+        }
+      }
+
       const { error } = await supabase.from('pengajar').update(payload).eq('id', editId)
       if (!error) {
         fetchData()
@@ -345,7 +365,7 @@ export default function DataPengajarPage() {
                     <Key size={16} /> Akses Login Aplikasi
                   </div>
                   
-                  {!editId && (
+                  {!editId ? (
                     <label className="flex items-center gap-2 text-sm cursor-pointer">
                       <input 
                         type="checkbox" 
@@ -358,24 +378,37 @@ export default function DataPengajarPage() {
                       />
                       <span className="text-blue-900 font-medium">Buatkan Akun Baru</span>
                     </label>
-                  )}
+                  ) : profileId ? (
+                    <label className="flex items-center gap-2 text-sm cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        checked={ubahDataLogin}
+                        onChange={(e) => setUbahDataLogin(e.target.checked)}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" 
+                      />
+                      <span className="text-blue-900 font-medium">Ubah Data Login</span>
+                    </label>
+                  ) : null}
                 </div>
 
-                {!buatAkunOtomatis ? (
+                {(!editId && !buatAkunOtomatis) || (editId && !ubahDataLogin) ? (
                   <div>
                     <select 
                       value={profileId}
                       onChange={(e) => setProfileId(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-lg border border-blue-200 bg-white focus:ring-2 focus:ring-blue-400 outline-none text-sm"
+                      disabled={!!editId && !!profileId}
+                      className="w-full px-4 py-2.5 rounded-lg border border-blue-200 bg-white focus:ring-2 focus:ring-blue-400 outline-none text-sm disabled:bg-gray-100"
                     >
                       <option value="">-- Tidak Terhubung (Pilih Profil Jika Ada) --</option>
                       {profiles.map(p => (
                         <option key={p.id} value={p.id}>{p.full_name} ({p.email})</option>
                       ))}
                     </select>
-                    <p className="text-xs text-blue-600 mt-1.5 leading-relaxed">
-                      Pilih dari akun yang sudah ada, atau centang "Buatkan Akun Baru" di atas.
-                    </p>
+                    {!editId && (
+                      <p className="text-xs text-blue-600 mt-1.5 leading-relaxed">
+                        Pilih dari akun yang sudah ada, atau centang "Buatkan Akun Baru" di atas.
+                      </p>
+                    )}
                   </div>
                 ) : (
                   <div className="grid grid-cols-2 gap-4 mt-2 animate-in fade-in duration-300">
@@ -383,7 +416,7 @@ export default function DataPengajarPage() {
                       <label className="block text-xs font-medium text-gray-700 mb-1">Email Login</label>
                       <input 
                         type="email" 
-                        required={buatAkunOtomatis}
+                        required={buatAkunOtomatis || ubahDataLogin}
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         className="w-full px-3 py-2 rounded-lg border border-blue-200 focus:ring-2 focus:ring-blue-400 outline-none text-sm"
@@ -391,14 +424,16 @@ export default function DataPengajarPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">Password</label>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">
+                        Password {ubahDataLogin && <span className="text-gray-400 font-normal">(Kosongkan jika tidak diubah)</span>}
+                      </label>
                       <input 
                         type="password" 
                         required={buatAkunOtomatis}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className="w-full px-3 py-2 rounded-lg border border-blue-200 focus:ring-2 focus:ring-blue-400 outline-none text-sm"
-                        placeholder="Minimal 6 karakter"
+                        placeholder={ubahDataLogin ? "Ketik password baru..." : "Minimal 6 karakter"}
                         minLength={6}
                       />
                     </div>

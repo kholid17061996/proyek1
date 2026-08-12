@@ -38,7 +38,6 @@ export default function AdminLayout({
     { name: 'Data Kelas', href: '/admin/kelas', icon: School },
     { name: 'Data Periode', href: '/admin/periode', icon: CalendarDays },
     { name: 'Data Pengajar', href: '/admin/pengajar', icon: UserCircle },
-    { name: 'Data Orang Tua', href: '/admin/ortu', icon: Users },
     { name: 'Data Siswa', href: '/admin/santri', icon: BookOpen },
   ]
 
