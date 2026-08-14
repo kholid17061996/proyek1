@@ -32,7 +32,6 @@ export default function OrtuDashboardLayout({
   if (!santriData) return null
 
   return (
-  return (
     <div className="min-h-screen bg-slate flex flex-col relative overflow-hidden">
       <BackgroundEffects />
 

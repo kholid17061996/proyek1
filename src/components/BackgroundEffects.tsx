@@ -82,19 +82,19 @@ export default function BackgroundEffects() {
             />
 
             {/* Longest, faintest tail */}
-            <path d="M -30 110 Q 50 -40 130 110" fill="none" stroke="#f8d21c" stroke-opacity="0.3" pathLength="100" stroke-dasharray="25 100" stroke-linecap="round" filter="url(#glow)">
+            <path d="M -30 110 Q 50 -40 130 110" fill="none" stroke="#f8d21c" strokeOpacity="0.3" pathLength="100" strokeDasharray="25 100" strokeLinecap="round" filter="url(#glow)">
               <animate attributeName="stroke-dashoffset" values="25; -75" dur="8s" repeatCount="indefinite" />
               <animate attributeName="stroke-width" values="0.1; 0.4; 0.2" keyTimes="0; 0.5; 1" dur="8s" repeatCount="indefinite" />
             </path>
 
             {/* Medium tail */}
-            <path d="M -30 110 Q 50 -40 130 110" fill="none" stroke="#f8d21c" stroke-opacity="0.7" pathLength="100" stroke-dasharray="12 100" stroke-linecap="round" filter="url(#glow)">
+            <path d="M -30 110 Q 50 -40 130 110" fill="none" stroke="#f8d21c" strokeOpacity="0.7" pathLength="100" strokeDasharray="12 100" strokeLinecap="round" filter="url(#glow)">
               <animate attributeName="stroke-dashoffset" values="12; -88" dur="8s" repeatCount="indefinite" />
               <animate attributeName="stroke-width" values="0.2; 0.8; 0.3" keyTimes="0; 0.5; 1" dur="8s" repeatCount="indefinite" />
             </path>
 
             {/* Shortest, brightest tail */}
-            <path d="M -30 110 Q 50 -40 130 110" fill="none" stroke="#ffffff" pathLength="100" stroke-dasharray="3 100" stroke-linecap="round" filter="url(#glow)">
+            <path d="M -30 110 Q 50 -40 130 110" fill="none" stroke="#ffffff" pathLength="100" strokeDasharray="3 100" strokeLinecap="round" filter="url(#glow)">
               <animate attributeName="stroke-dashoffset" values="3; -97" dur="8s" repeatCount="indefinite" />
               <animate attributeName="stroke-width" values="0.3; 1.5; 0.5" keyTimes="0; 0.5; 1" dur="8s" repeatCount="indefinite" />
             </path>
