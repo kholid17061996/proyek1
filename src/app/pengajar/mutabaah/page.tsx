@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { supabase } from '@/utils/supabase/client'
-import { Loader2, Save, Calendar, CheckSquare, BookOpen, Star, User, BookMarked, Mic, History, X, Pen, Trash2, Heart, BookText } from 'lucide-react'
+import { Loader2, Save, Calendar, CheckSquare, BookOpen, Star, User, BookMarked, Mic, History, X, Pen, Trash2, Heart, BookText, BookA, BookOpenText } from 'lucide-react'
 import { DOA_HARIAN_DATA } from '@/utils/doaData'
 import { HADITS_DATA } from '@/utils/haditsData'
 
@@ -12,10 +12,12 @@ type Santri = {
   nama: string
   nis: string
   kelas?: any
+  is_tahsin?: boolean
 }
 
 type MasterQuran = {
   juz: number
+
   surah: string
   ayat_mulai: number
   ayat_selesai: number
@@ -31,6 +33,7 @@ function SubSetoranCard({
   setData, 
   masterQuran,
   showFractions = false,
+  hidePredikat = false,
   colorFrom = 'from-teal-500',
   colorTo = 'to-teal-600',
   borderColor = 'border-teal-200',
@@ -220,23 +223,25 @@ function SubSetoranCard({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-1">
-                <Star size={16} className="text-emas" /> Predikat
-              </label>
-              <select 
-                value={data.predikat}
-                onChange={(e) => handleChange('predikat', e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-yellow-300 focus:ring-2 focus:ring-yellow-500 outline-none bg-yellow-50 font-bold text-gray-800"
-              >
-                <option value="Mumtaz">Mumtaz (Sangat Baik)</option>
-                <option value="Jayyid Jiddan">Jayyid Jiddan (Baik Sekali)</option>
-                <option value="Jayyid">Jayyid (Baik)</option>
-                <option value="Maqbul">Maqbul (Cukup)</option>
-              </select>
+          {!hidePredikat && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-1">
+                  <Star size={16} className="text-emas" /> Predikat
+                </label>
+                <select 
+                  value={data.predikat}
+                  onChange={(e) => handleChange('predikat', e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-yellow-300 focus:ring-2 focus:ring-yellow-500 outline-none bg-yellow-50 font-bold text-gray-800"
+                >
+                  <option value="Mumtaz">Mumtaz (Sangat Baik)</option>
+                  <option value="Jayyid Jiddan">Jayyid Jiddan (Baik Sekali)</option>
+                  <option value="Jayyid">Jayyid (Baik)</option>
+                  <option value="Maqbul">Maqbul (Cukup)</option>
+                </select>
+              </div>
             </div>
-          </div>
+          )}
 
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2">Catatan</label>
@@ -288,12 +293,12 @@ const AYAT_PILIHAN_OPTIONS = [
       },
       {
         "number": 285,
-        "arabic": "ءَامَنَ ٱلرَّسُولُ بِمَاۤ أُنزِلَ إِلَیۡهِ مِن رَّبِّهِۦ وَٱلۡمُؤۡمِنُونَۚ كُلٌّ ءَامَنَ بِٱللَّهِ وَمَلَـٰۤىِٕكَتِهِۦ وَكُتُبِهِۦ وَرُسُلِهِۦ لَا نُفَرِّقُ بَیۡنَ أَحَدࣲ مِّن رُّسُلِهِۦۚ وَقَالُوا۟ سَمِعۡنَا وَأَطَعۡنَاۖ غُفۡرَانَكَ رَبَّنَا وَإِلَیۡكَ ٱلۡمَصِیرُ\n",
+        "arabic": "ءَامَنَ ٱلرَّسُولُ بِمَاۤ أُنزِلَ إِلَیۡهِ مِن رَّبِّهِۦ وَٱلۡمُؤۡمِنُونَۚ كُلٌّ ءَامَنَ بِٱللَّهِ وَمَلَـٰۤىِٕكَتِهِۦ وَكُتُبِهِۦ وَرُسُلِهِۦ لَا نُفَرِّقُ بَیۡنَ أَحَدࣲ مِّن رُّسُلِهِۦۚ وَقَالُوا۟ سَمِعۡنَا وَأَطَعۡنَاۖ غُفۡرَانَكَ رَبَّنَا وَإِلَیۡكَ ٱلْمَصِیرُ\n",
         "translation": "Rasul telah beriman kepada Al Quran yang diturunkan kepadanya dari Tuhannya, demikian pula orang-orang yang beriman. Semuanya beriman kepada Allah, malaikat-malaikat-Nya, kitab-kitab-Nya dan rasul-rasul-Nya. (Mereka mengatakan): \"Kami tidak membeda-bedakan antara seseorangpun (dengan yang lain) dari rasul-rasul-Nya\", dan mereka mengatakan: \"Kami dengar dan kami taat\". (Mereka berdoa): \"Ampunilah kami ya Tuhan kami dan kepada Engkaulah tempat kembali\"."
       },
       {
         "number": 286,
-        "arabic": "لَا یُكَلِّفُ ٱللَّهُ نَفۡسًا إِلَّا وُسۡعَهَاۚ لَهَا مَا كَسَبَتۡ وَعَلَیۡهَا مَا ٱكۡتَسَبَتۡۗ رَبَّنَا لَا تُؤَاخِذۡنَاۤ إِن نَّسِینَاۤ أَوۡ أَخۡطَأۡنَاۚ رَبَّنَا وَلَا تَحۡمِلۡ عَلَیۡنَاۤ إِصۡرࣰا كَمَا حَمَلۡتَهُۥ عَلَى ٱلَّذِینَ مِن قَبۡلِنَاۚ رَبَّنَا وَلَا تُحَمِّلۡنَا مَا لَا طَاقَةَ لَنَا بِهِۦۖ وَٱعۡفُ عَنَّا وَٱغۡفِرۡ لَنَا وَٱرۡحَمۡنَاۤۚ أَنتَ مَوۡلَىٰنَا فَٱنصُرۡنَا عَلَى ٱلۡقَوۡمِ ٱلۡكَـٰفِرِینَ\n",
+        "arabic": "لَا یُكَلِّفُ ٱللَّهُ نَفۡسًا إِلَّا وُسۡعَهَاۚ لَهَا مَا كَسَبَتۡ وَعَلَیۡهَا مَا ٱكْتَسَبَتۡۗ رَبَّنَا لَا تُؤَاخِذۡنَاۤ إِن نَّسِینَاۤ أَوۡ أَخْطَأۡنَاۚ رَبَّنَا وَلَا تَحْمِلۡ عَلَیۡنَاۤ إِصۡرࣰا كَمَا حَمَلْتَهُۥ عَلَى ٱلَّذِینَ مِن قَبْلِنَاۚ رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِۦۖ وَٱعْفُ عَنَّا وَٱغْفِرْ لَنَا وَٱرْحَمْنَاۤۚ أَنتَ مَوۡلَىٰنَا فَٱنصُرْنَا عَلَى ٱلْقَوۡمِ ٱلْكَـٰفِرِینَ\n",
         "translation": "Allah tidak membebani seseorang melainkan sesuai dengan kesanggupannya. Ia mendapat pahala (dari kebajikan) yang diusahakannya dan ia mendapat siksa (dari kejahatan) yang dikerjakannya. (Mereka berdoa): \"Ya Tuhan kami, janganlah Engkau hukum kami jika kami lupa atau kami tersalah. Ya Tuhan kami, janganlah Engkau bebankan kepada kami beban yang berat sebagaimana Engkau bebankan kepada orang-orang sebelum kami. Ya Tuhan kami, janganlah Engkau pikulkan kepada kami apa yang tak sanggup kami memikulnya. Beri maaflah kami; ampunilah kami; dan rahmatilah kami. Engkaulah Penolong kami, maka tolonglah kami terhadap kaum yang kafir\"."
       }
     ]
@@ -316,17 +321,17 @@ const AYAT_PILIHAN_OPTIONS = [
       },
       {
         "number": 192,
-        "arabic": "رَبَّنَاۤ إِنَّكَ مَن تُدۡخِلِ ٱل��َّارَ فَقَدۡ أَخۡزَیۡتَهُۥۖ وَمَا لِلظَّـٰلِمِینَ مِنۡ أَنصَارࣲ\n",
+        "arabic": "رَبَّنَاۤ إِنَّكَ مَن تُدۡخِلِ ٱلنَّارَ فَقَدۡ أَخْزَیْتَهُۥۖ وَمَا لِلظَّـٰلِمِینَ مِنۡ أَنصَارࣲ\n",
         "translation": "Ya Tuhan kami, sesungguhnya barangsiapa yang Engkau masukkan ke dalam neraka, maka sungguh telah Engkau hinakan ia, dan tidak ada bagi orang-orang yang zalim seorang penolongpun."
       },
       {
         "number": 193,
-        "arabic": "رَّبَّنَاۤ إِنَّنَا سَمِعۡنَا مُنَادِیࣰا یُنَادِی لِلۡإِیمَـٰنِ أَنۡ ءَامِنُوا۟ بِرَبِّكُمۡ فَـَٔامَنَّاۚ رَبَّنَا فَٱغۡفِرۡ لَنَا ذُنُوبَنَا وَكَفِّرۡ عَنَّا سَیِّـَٔاتِنَا وَتَوَفَّنَا مَعَ ٱلۡأَبۡرَارِ\n",
+        "arabic": "رَّبَّنَاۤ إِنَّنَا سَمِعۡنَا مُنَادِیࣰا یُنَادِی لِلۡإِیمَـٰنِ أَنۡ ءَامِنُوا۟ بِرَبِّكُمۡ فَـَٔامَنَّاۚ رَبَّنَا فَٱغْفِرْ لَنَا ذُنُوبَنَا وَكَفِّرْ عَنَّا سَیِّـَٔاتِنَا وَتَوَفَّنَا مَعَ ٱلْأَبْرَارِ\n",
         "translation": "Ya Tuhan kami, sesungguhnya kami mendengar (seruan) yang menyeru kepada iman, (yaitu): \"Berimanlah kamu kepada Tuhanmu\", maka kamipun beriman. Ya Tuhan kami, ampunilah bagi kami dosa-dosa kami dan hapuskanlah dari kami kesalahan-kesalahan kami, dan wafatkanlah kami beserta orang-orang yang banyak berbakti."
       },
       {
         "number": 194,
-        "arabic": "رَبَّنَا وَءَاتِنَا مَا وَعَدتَّنَا عَلَىٰ رُسُلِكَ وَلَا تُخۡزِنَا یَوۡمَ ٱلۡقِیَـٰمَةِۖ إِنَّكَ لَا تُخۡلِفُ ٱلۡمِیعَادَ\n",
+        "arabic": "رَبَّنَا وَءَاتِنَا مَا وَعَدتَّنَا عَلَىٰ رُسُلِكَ وَلَا تُخْزِنَا یَوۡمَ ٱلْقِیَـٰمَةِۖ إِنَّكَ لَا تُخْلِفُ ٱلْمِیعَادَ\n",
         "translation": "Ya Tuhan kami, berilah kami apa yang telah Engkau janjikan kepada kami dengan perantaraan rasul-rasul Engkau. Dan janganlah Engkau hinakan kami di hari kiamat. Sesungguhnya Engkau tidak menyalahi janji\"."
       }
     ]
@@ -344,7 +349,7 @@ const AYAT_PILIHAN_OPTIONS = [
       },
       {
         "number": 24,
-        "arabic": "وَٱخۡفِضۡ لَهُمَا جَنَاحَ ٱلذُّلِّ مِنَ ٱلرَّحۡمَةِ وَقُل رَّبِّ ٱرۡحَمۡهُمَا كَمَا رَبَّیَانِی صَغِیرࣰا\n",
+        "arabic": "وَٱخۡفِضۡ لَهُمَا جَنَاحَ ٱلذُّلِّ مِنَ ٱلرَّحۡمَةِ وَقُل رَّبِّ ٱرْحَمْهُمَا كَمَا رَبَّیَانِی صَغِیرࣰا\n",
         "translation": "Dan rendahkanlah dirimu terhadap mereka berdua dengan penuh kesayangan dan ucapkanlah: \"Wahai Tuhanku, kasihilah mereka keduanya, sebagaimana mereka berdua telah mendidik aku waktu kecil\"."
       },
       {
@@ -359,7 +364,7 @@ const AYAT_PILIHAN_OPTIONS = [
       },
       {
         "number": 27,
-        "arabic": "إِنَّ ٱلۡمُبَذِّرِینَ كَانُوۤا۟ إِخۡوَ ٰ⁠نَ ٱلشَّیَـٰطِینِۖ وَكَانَ ٱلشَّیۡطَـٰنُ لِرَبِّهِۦ كَفُورࣰا\n",
+        "arabic": "إِنَّ ٱلۡمُبَذِّرِینَ كَانُوۤا۟ إِخۡوَ ٰ⁠نَ ٱلشَّیَـٰطِینِۖ وَكَانَ ٱلشَّیْطَـٰنُ لِرَبِّهِۦ كَفُورࣰا\n",
         "translation": "Sesungguhnya pemboros-pemboros itu adalah saudara-saudara syaitan dan syaitan itu adalah sangat ingkar kepada Tuhannya."
       }
     ]
@@ -425,7 +430,7 @@ const AYAT_PILIHAN_OPTIONS = [
     "verses": [
       {
         "number": 77,
-        "arabic": "وَٱبۡتَغِ فِیمَاۤ ءَاتَىٰكَ ٱللَّهُ ٱلدَّارَ ٱلۡـَٔاخِرَةَۖ وَلَا تَنسَ نَصِیبَكَ مِنَ ٱلدُّنۡیَاۖ وَأَحۡسِن كَمَاۤ أَحۡسَنَ ٱللَّهُ إِلَیۡكَۖ وَلَا تَبۡغِ ٱلۡفَسَادَ فِی ٱلۡأَرۡضِۖ إِنَّ ٱللَّهَ لَا یُحِبُّ ٱلۡمُفۡسِدِینَ\n",
+        "arabic": "وَٱبۡتَغِ فِیمَاۤ ءَاتَىٰكَ ٱللَّهُ ٱلدَّارَ ٱلۡـَٔاخِرَةَۖ وَلَا تَنسَ نَصِیبَكَ مِنَ ٱلدُّنۡیَاۖ وَأَحۡسِن كَمَاۤ أَحْسَنَ ٱللَّهُ إِلَیۡكَۖ وَلَا تَبۡغِ ٱلۡفَسَادَ فِی ٱلۡأَرۡضِۖ إِنَّ ٱللَّهَ لَا یُحِبُّ ٱلۡمُفْسِدِینَ\n",
         "translation": "Dan carilah pada apa yang telah dianugerahkan Allah kepadamu (kebahagiaan) negeri akhirat, dan janganlah kamu melupakan bahagianmu dari (kenikmatan) duniawi dan berbuat baiklah (kepada orang lain) sebagaimana Allah telah berbuat baik, kepadamu, dan janganlah kamu berbuat kerusakan di (muka) bumi. Sesungguhnya Allah tidak menyukai orang-orang yang berbuat kerusakan."
       }
     ]
@@ -451,7 +456,7 @@ const AYAT_PILIHAN_OPTIONS = [
     "verses": [
       {
         "number": 13,
-        "arabic": "یَـٰۤأَیُّهَا ٱلنَّاسُ إِنَّا خَلَقۡنَـٰكُم مِّن ذَكَرࣲ وَأُنثَىٰ وَجَعَلۡنَـٰكُمۡ شُعُوبࣰا وَقَبَاۤىِٕلَ لِتَعَارَفُوۤا۟ۚ إِنَّ أَكۡرَمَكُمۡ عِندَ ٱللَّهِ أَتۡقَىٰكُمۡۚ إِنَّ ٱللَّهَ عَلِیمٌ خَبِیرࣱ\n",
+        "arabic": "یَـٰۤأَیُّهَا ٱلنَّاسُ إِنَّا خَلَقۡنَـٰكُم مِّن ذَكَرࣲ وَأُنثَىٰ وَجَعَلۡنَـٰكُمۡ شُعُوبࣰا وَقَبَاۤىِٕلَ لِتَعَارَفُوۤا۟ۚ إِنَّ أَكۡرَمَكُمۡ عِندَ ٱللَّهِ أَتْقَىٰكُمۡۚ إِنَّ ٱللَّهَ عَلِیمٌ خَبِیرࣱ\n",
         "translation": "Hai manusia, sesungguhnya Kami menciptakan kamu dari seorang laki-laki dan seorang perempuan dan menjadikan kamu berbangsa-bangsa dan bersuku-suku supaya kamu saling kenal-mengenal. Sesungguhnya orang yang paling mulia diantara kamu disisi Allah ialah orang yang paling takwa diantara kamu. Sesungguhnya Allah Maha Mengetahui lagi Maha Mengenal."
       }
     ]
@@ -469,17 +474,17 @@ const AYAT_PILIHAN_OPTIONS = [
       },
       {
         "number": 19,
-        "arabic": "وَلَا تَكُونُوا۟ كَٱلَّذِینَ نَسُوا۟ ٱللَّهَ فَأَنسَىٰهُمۡ أَنفُسَهُمۡۚ أُو۟لَـٰۤىِٕكَ هُمُ ٱلۡفَـٰسِقُونَ\n",
+        "arabic": "وَلَا تَكُونُوا۟ كَٱلَّذِینَ نَسُوا۟ ٱللَّهَ فَأَنسَىٰهُمۡ أَنفُسَهُمۡۚ أُو۟لَـٰۤىِٕكَ هُمُ ٱلْفَـٰسِقُونَ\n",
         "translation": "Dan janganlah kamu seperti orang-orang yang lupa kepada Allah, lalu Allah menjadikan mereka lupa kepada mereka sendiri. Mereka itulah orang-orang yang fasik."
       },
       {
         "number": 20,
-        "arabic": "لَا یَسۡتَوِیۤ أَصۡحَـٰبُ ٱلنَّارِ وَأَصۡحَـٰبُ ٱلۡجَنَّةِۚ أَصۡحَـٰبُ ٱلۡجَنَّةِ هُمُ ٱلۡفَاۤىِٕزُونَ\n",
+        "arabic": "لَا یَسۡتَوِیۤ أَصۡحَـٰبُ ٱلنَّارِ وَأَصْحَـٰبُ ٱلْجَنَّةِۚ أَصْحَـٰبُ ٱلْجَنَّةِ هُمُ ٱلْفَاۤىِٕزُونَ\n",
         "translation": "Tidaklah sama penghuni-penghuni neraka dengan penghuni-penghuni jannah; penghuni-penghuni jannah itulah orang-orang yang beruntung."
       },
       {
         "number": 21,
-        "arabic": "لَوۡ أَنزَلۡنَا هَـٰذَا ٱلۡقُرۡءَانَ عَلَىٰ جَبَلࣲ لَّرَأَیۡتَهُۥ خَـٰشِعࣰا مُّتَصَدِّعࣰا مِّنۡ خَشۡیَةِ ٱللَّهِۚ وَتِلۡكَ ٱلۡأَمۡثَـٰلُ نَضۡرِبُهَا لِلنَّاسِ لَعَلَّهُمۡ یَتَفَكَّرُونَ\n",
+        "arabic": "لَوۡ أَنزَلۡنَا هَـٰذَا ٱلْقُرۡءَانَ عَلَىٰ جَبَلࣲ لَّرَأَیْتَهُۥ خَـٰشِعࣰا مُّتَصَدِّعࣰا مِّنۡ خَشۡیَةِ ٱللَّهِۚ وَتِلْكَ ٱلْأَمْثَـٰلُ نَضْرِبُهَا لِلنَّاسِ لَعَلَّهُمۡ یَتَفَكَّرُونَ\n",
         "translation": "Kalau sekiranya Kami turunkan Al-Quran ini kepada sebuah gunung, pasti kamu akan melihatnya tunduk terpecah belah disebabkan ketakutannya kepada Allah. Dan perumpamaan-perumpamaan itu Kami buat untuk manusia supaya mereka berfikir."
       },
       {
@@ -489,12 +494,12 @@ const AYAT_PILIHAN_OPTIONS = [
       },
       {
         "number": 23,
-        "arabic": "هُوَ ٱللَّهُ ٱلَّذِی لَاۤ إِلَـٰهَ إِلَّا هُوَ ٱلۡمَلِكُ ٱلۡقُدُّوسُ ٱلسَّلَـٰمُ ٱلۡمُؤۡمِنُ ٱلۡمُهَیۡمِنُ ٱلۡعَزِیزُ ٱلۡجَبَّارُ ٱلۡمُتَكَبِّرُۚ سُبۡحَـٰنَ ٱللَّهِ عَمَّا یُشۡرِكُونَ\n",
+        "arabic": "هُوَ ٱللَّهُ ٱلَّذِی لَاۤ إِلَـٰهَ إِلَّا هُوَ ٱلْمَلِكُ ٱلْقُدُّوسُ ٱلسَّلَـٰمُ ٱلْمُؤۡمِنُ ٱلْمُهَیۡمِنُ ٱلْعَزِیزُ ٱلْجَبَّارُ ٱلْمُتَكَبِّرُۚ سُبْحَـٰنَ ٱللَّهِ عَمَّا یُشْرِكُونَ\n",
         "translation": "Dialah Allah Yang tiada Tuhan selain Dia, Raja, Yang Maha Suci, Yang Maha Sejahtera, Yang Mengaruniakan Keamanan, Yang Maha Memelihara, Yang Maha Perkasa, Yang Maha Kuasa, Yang Memiliki segala Keagungan, Maha Suci Allah dari apa yang mereka persekutukan."
       },
       {
         "number": 24,
-        "arabic": "هُوَ ٱللَّهُ ٱلۡخَـٰلِقُ ٱلۡبَارِئُ ٱلۡمُصَوِّرُۖ لَهُ ٱلۡأَسۡمَاۤءُ ٱلۡحُسۡنَىٰۚ یُسَبِّحُ لَهُۥ مَا فِی ٱلسَّمَـٰوَ ٰ⁠تِ وَٱلۡأَرۡضِۖ وَهُوَ ٱلۡعَزِیزُ ٱلۡحَكِیمُ\n",
+        "arabic": "هُوَ ٱللَّهُ ٱلْخَـٰلِقُ ٱلْبَارِئُ ٱلْمُصَوِّرُۖ لَهُ ٱلْأَسْمَاۤءُ ٱلْحُسْنَىٰۚ یُسَبِّحُ لَهُۥ مَا فِی ٱلسَّمَـٰوَ ٰ⁠تِ وَٱلْأَرۡضِۖ وَهُوَ ٱلْعَزِیزُ ٱلْحَكِیمُ\n",
         "translation": "Dialah Allah Yang Menciptakan, Yang Mengadakan, Yang Membentuk Rupa, Yang Mempunyai Asmaaul Husna. Bertasbih kepada-Nya apa yang di langit dan bumi. Dan Dialah Yang Maha Perkasa lagi Maha Bijaksana."
       }
     ]
@@ -931,6 +936,173 @@ function HaditsCard({
   )
 }
 
+function TahsinCard({
+  enabled, setEnabled, data, setData, onSave
+}: any) {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => { setMounted(true) }, [])
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setEnabled(false)
+    }
+    if (enabled) window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [enabled, setEnabled])
+
+  const handleChange = (field: string, value: any) => {
+    const newData = { ...data, [field]: value }
+    if (field === 'jenis') {
+      newData.buku = '' // reset buku saat jenis berubah
+    }
+    setData(newData)
+  }
+
+  if (!enabled || !mounted) return null;
+
+  return createPortal(
+    <div 
+      className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+      onClick={() => setEnabled(false)}
+    >
+      <div 
+        className="w-full max-w-lg max-h-[90vh] overflow-y-auto border border-blue-200 bg-white shadow-2xl rounded-3xl animate-in zoom-in-95 duration-300 relative hide-scrollbar"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-4 flex items-center justify-between sticky top-0 z-10 shadow-md">
+          <div className="flex items-center gap-3">
+            <BookA className="text-white" size={20} />
+            <h3 className="font-bold text-white text-lg tracking-wide">Tahsin</h3>
+          </div>
+          <button 
+            type="button" 
+            onClick={() => setEnabled(false)} 
+            className="text-white hover:bg-white/20 p-2 rounded-full transition-colors"
+          >
+            <X size={20} />
+          </button>
+        </div>
+        
+        <div className="p-6 space-y-6">
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-2">Jenis Buku</label>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => handleChange('jenis', 'Kibar')}
+                className={`py-3 rounded-xl font-bold transition-all ${
+                  data.jenis === 'Kibar' ? 'bg-blue-500 text-white shadow-lg ring-2 ring-blue-300' : 'bg-gray-50 border border-gray-300 text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                Kibar
+              </button>
+              <button
+                type="button"
+                onClick={() => handleChange('jenis', "Iqro'")}
+                className={`py-3 rounded-xl font-bold transition-all ${
+                  data.jenis === "Iqro'" ? 'bg-indigo-500 text-white shadow-lg ring-2 ring-indigo-300' : 'bg-gray-50 border border-gray-300 text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                Iqro'
+              </button>
+            </div>
+          </div>
+
+          {data.jenis && (
+            <div className="animate-in fade-in duration-300">
+              <label className="block text-sm font-bold text-gray-700 mb-2">Pilih Jilid</label>
+              <select 
+                value={data.buku}
+                onChange={(e) => handleChange('buku', e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none font-bold text-gray-900 bg-blue-50/50"
+                required={enabled}
+              >
+                <option value="">-- Pilih {data.jenis} --</option>
+                {data.jenis === 'Kibar' && ['Kibar A', 'Kibar B', 'Kibar C', 'Kibar D'].map(b => <option key={b} value={b}>{b}</option>)}
+                {data.jenis === "Iqro'" && ["Iqro' 1", "Iqro' 2", "Iqro' 3", "Iqro' 4", "Iqro' 5", "Iqro' 6"].map(b => <option key={b} value={b}>{b}</option>)}
+              </select>
+            </div>
+          )}
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold text-gray-500 mb-1 uppercase">Dari Hal.</label>
+              <input 
+                type="number" 
+                min={1}
+                placeholder="Hal"
+                value={data.halMulai} 
+                onChange={(e) => handleChange('halMulai', e.target.value)} 
+                className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" 
+                required={enabled}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-500 mb-1 uppercase">Sampai Hal.</label>
+              <input 
+                type="number" 
+                min={data.halMulai || 1}
+                placeholder="Hal"
+                value={data.halSelesai} 
+                onChange={(e) => handleChange('halSelesai', e.target.value)} 
+                className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" 
+                required={enabled}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-1">
+              <Star size={16} className="text-emas" /> Predikat
+            </label>
+            <select 
+              value={data.predikat}
+              onChange={(e) => handleChange('predikat', e.target.value)}
+              className="w-full px-4 py-3 rounded-xl border border-yellow-300 focus:ring-2 focus:ring-yellow-500 outline-none bg-yellow-50 font-bold text-gray-800"
+            >
+              <option value="Mumtaz">Mumtaz (Sangat Baik)</option>
+              <option value="Jayyid Jiddan">Jayyid Jiddan (Baik Sekali)</option>
+              <option value="Jayyid">Jayyid (Baik)</option>
+              <option value="Maqbul">Maqbul (Cukup)</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-2">Catatan</label>
+            <textarea 
+              placeholder="Catatan..." 
+              value={data.catatan} 
+              onChange={(e) => handleChange('catatan', e.target.value)} 
+              className="w-full p-4 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none min-h-[100px]" 
+            />
+          </div>
+
+          <div className="pt-4 border-t border-gray-100 flex justify-end">
+            <button
+              type="button"
+              onClick={() => {
+                if (enabled && (!data.jenis || !data.buku || !data.halMulai || !data.halSelesai)) {
+                  alert("Mohon lengkapi semua isian Tahsin (Jenis, Buku, Halaman).");
+                  return;
+                }
+                if (onSave) {
+                  onSave();
+                } else {
+                  setEnabled(false);
+                }
+              }}
+              className="px-8 py-3 rounded-xl text-white font-bold bg-gradient-to-r from-blue-500 to-indigo-600 hover:opacity-90 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+            >
+              Simpan & Tutup
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>,
+    document.body
+  )
+}
+
 // --- MAIN PAGE ---
 
 export default function SetoranUnifiedPage() {
@@ -965,6 +1137,12 @@ export default function SetoranUnifiedPage() {
   const [doaHarian, setDoaHarian] = useState({ doaId: '', predikat: 'Mumtaz', catatan: '' })
   const [haditsOpen, setHaditsOpen] = useState(false)
   const [hadits, setHadits] = useState({ haditsId: '', predikat: 'Mumtaz', catatan: '' })
+  
+  const [tahsinOpen, setTahsinOpen] = useState(false)
+  const [tahsin, setTahsin] = useState({ jenis: '', buku: '', halMulai: '', halSelesai: '', predikat: 'Mumtaz', catatan: '' })
+
+  const [tilawahOpen, setTilawahOpen] = useState(false)
+  const [tilawah, setTilawah] = useState(defaultSubData)
 
   const [editingRecord, setEditingRecord] = useState<any>(null)
   const [editData, setEditData] = useState<any>(defaultSubData)
@@ -994,11 +1172,19 @@ export default function SetoranUnifiedPage() {
       setMurojaahOpen(false)
       setTasmiOpen(false)
       setAyatPilihanOpen(false)
+      setDoaHarianOpen(false)
+      setHaditsOpen(false)
+      setTahsinOpen(false)
+      setTilawahOpen(false)
       
       setZiyadah(defaultSubData)
       setMurojaah(defaultSubData)
       setTasmi(defaultSubData)
+      setTilawah(defaultSubData)
       setAyatPilihan({ pilihanIndex: '', ayatMulai: '', ayatSelesai: '', predikat: 'Mumtaz', catatan: '' })
+      setDoaHarian({ doaId: '', predikat: 'Mumtaz', catatan: '' })
+      setHadits({ haditsId: '', predikat: 'Mumtaz', catatan: '' })
+      setTahsin({ jenis: '', buku: '', halMulai: '', halSelesai: '', predikat: 'Mumtaz', catatan: '' })
     }
   }, [kehadiran])
 
@@ -1017,7 +1203,7 @@ export default function SetoranUnifiedPage() {
       if (pData) {
         setPengajarId(pData.id)
         const [resSantri, resQuran] = await Promise.all([
-          supabase.from('santri').select('id, nama, nis, kelas(nama)').eq('pengajar_id', pData.id).eq('status', 'aktif').order('nama'),
+          supabase.from('santri').select('id, nama, nis, is_tahsin, kelas(nama)').eq('pengajar_id', pData.id).eq('status', 'aktif').order('nama'),
           supabase.from('master_quran').select('*').order('id')
         ])
         if (resSantri.data) setSantriList(resSantri.data)
@@ -1056,6 +1242,16 @@ export default function SetoranUnifiedPage() {
         predikat: record.predikat,
         catatan: record.catatan || ''
       })
+    } else if (record.jenis_setoran === 'tahsin') {
+      const jenis = (record.surat_mulai || '').startsWith("Iqro") ? "Iqro'" : "Kibar"
+      setEditData({
+        jenis: jenis,
+        buku: record.surat_mulai,
+        halMulai: record.ayat_mulai,
+        halSelesai: record.ayat_selesai,
+        predikat: record.predikat,
+        catatan: record.catatan || ''
+      })
     } else {
       setEditData({
         juz: record.juz || '',
@@ -1082,6 +1278,14 @@ export default function SetoranUnifiedPage() {
         surat: opt.surat, surat_mulai: opt.surat, ayat_mulai: Number(editData.ayatMulai) || opt.min,
         surat_selesai: opt.surat, ayat_selesai: Number(editData.ayatSelesai) || opt.max,
         predikat: editData.predikat, catatan: editData.catatan
+      }
+    } else if (editingRecord.jenis_setoran === 'tahsin') {
+      payload = {
+        juz: null,
+        surat: editData.buku, surat_mulai: editData.buku, ayat_mulai: Number(editData.halMulai) || 1,
+        surat_selesai: editData.buku, ayat_selesai: Number(editData.halSelesai) || 1,
+        predikat: editData.predikat, catatan: editData.catatan,
+        bagian_juz: null
       }
     } else {
       payload = {
@@ -1202,6 +1406,26 @@ export default function SetoranUnifiedPage() {
         }
       }
 
+      if (tahsin.jenis !== '' && tahsin.buku !== '') {
+        setoranPayloads.push({
+          santri_id: santriId, pengajar_id: pengajarId, tanggal_setoran: tanggal,
+          jenis_setoran: 'tahsin', juz: null,
+          surat: tahsin.buku, surat_mulai: tahsin.buku, ayat_mulai: Number(tahsin.halMulai) || 1,
+          surat_selesai: tahsin.buku, ayat_selesai: Number(tahsin.halSelesai) || 1,
+          predikat: tahsin.predikat, catatan: tahsin.catatan
+        })
+      }
+
+      if (tilawah.juz !== '' && tilawah.suratMulai !== '') {
+        setoranPayloads.push({
+          santri_id: santriId, pengajar_id: pengajarId, tanggal_setoran: tanggal,
+          jenis_setoran: 'tilawah', juz: Number(tilawah.juz),
+          surat: tilawah.suratMulai, surat_mulai: tilawah.suratMulai, ayat_mulai: Number(tilawah.ayatMulai),
+          surat_selesai: tilawah.suratSelesai || tilawah.suratMulai, ayat_selesai: Number(tilawah.ayatSelesai),
+          predikat: null, catatan: tilawah.catatan
+        })
+      }
+
       if (setoranPayloads.length > 0) {
         const { error } = await supabase.from('setoran_hafalan').insert(setoranPayloads)
         if (error) throw error
@@ -1215,6 +1439,8 @@ export default function SetoranUnifiedPage() {
       setAyatPilihanOpen(false); setAyatPilihan({ pilihanIndex: '', ayatMulai: '', ayatSelesai: '', predikat: 'Mumtaz', catatan: '' })
       setDoaHarianOpen(false); setDoaHarian({ doaId: '', predikat: 'Mumtaz', catatan: '' })
       setHaditsOpen(false); setHadits({ haditsId: '', predikat: 'Mumtaz', catatan: '' })
+      setTahsinOpen(false); setTahsin({ jenis: '', buku: '', halMulai: '', halSelesai: '', predikat: 'Mumtaz', catatan: '' })
+      setTilawahOpen(false); setTilawah(defaultSubData)
       setSantriId('') // Kosongkan siswa agar bisa lanjut ke siswa berikutnya
       
       // Refresh daftar riwayat
@@ -1242,36 +1468,36 @@ export default function SetoranUnifiedPage() {
       <div className="w-full lg:w-2/3 space-y-6">
         <div className="text-left mb-4">
           <h1 className="text-3xl font-bold text-white mb-1 drop-shadow-md">Form Input Mutaba'ah</h1>
-          <p className="text-blue-100">Kirim data setoran siswa dengan mudah dan cepat.</p>
+          <p className="text-white/60">Kirim data setoran siswa dengan mudah dan cepat.</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white/90 backdrop-blur-3xl rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/50 space-y-8">
+        <form onSubmit={handleSubmit} className="bg-white/10 backdrop-blur-2xl rounded-3xl p-6 sm:p-8 shadow-[0_8px_32px_rgba(0,0,0,0.2)] border border-white/20 space-y-8">
           
           <div className="space-y-4">
-            <h2 className="text-lg font-bold text-gray-800 border-b border-gray-200 pb-2 flex items-center gap-2">
-              <User size={20} className="text-teal-600" /> 1. Pilih Siswa & Tanggal
+            <h2 className="text-lg font-bold text-white border-b border-white/10 pb-2 flex items-center gap-2">
+              <User size={20} className="text-teal-300" /> 1. Pilih Siswa & Tanggal
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Tanggal</label>
+                <label className="block text-sm font-bold text-white/80 mb-2">Tanggal</label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                  <input type="date" required value={tanggal} onChange={(e) => setTanggal(e.target.value)} className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-teal-500 outline-none font-medium bg-gray-50" />
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" size={18} />
+                  <input type="date" required value={tanggal} onChange={(e) => setTanggal(e.target.value)} className="w-full pl-10 pr-4 py-3 rounded-xl border border-white/20 focus:ring-2 focus:ring-teal-400 outline-none font-medium bg-white/10 backdrop-blur text-white placeholder-white/40 [color-scheme:dark]" />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Nama Siswa</label>
-                <select required value={santriId} onChange={(e) => setSantriId(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-teal-500 outline-none font-bold text-gray-900 bg-gray-50">
-                  <option value="">-- Silakan Pilih Siswa --</option>
-                  {santriList.map(s => <option key={s.id} value={s.id}>{s.nama} ({s.nis})</option>)}
+                <label className="block text-sm font-bold text-white/80 mb-2">Nama Siswa</label>
+                <select required value={santriId} onChange={(e) => setSantriId(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-white/20 focus:ring-2 focus:ring-teal-400 outline-none font-bold text-white bg-white/10 backdrop-blur [color-scheme:dark]">
+                  <option value="" className="bg-slate-800">-- Silakan Pilih Siswa --</option>
+                  {santriList.map(s => <option key={s.id} value={s.id} className="bg-slate-800">{s.nama} ({s.nis})</option>)}
                 </select>
               </div>
             </div>
           </div>
 
           <div className="space-y-4">
-            <h2 className="text-lg font-bold text-gray-800 border-b border-gray-200 pb-2 flex items-center gap-2">
-              <CheckSquare size={20} className="text-teal-600" /> 2. Status Kehadiran
+            <h2 className="text-lg font-bold text-white border-b border-white/10 pb-2 flex items-center gap-2">
+              <CheckSquare size={20} className="text-teal-300" /> 2. Status Kehadiran
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {['Hadir', 'Izin', 'Sakit', 'Alfa'].map(status => (
@@ -1281,11 +1507,11 @@ export default function SetoranUnifiedPage() {
                   onClick={() => setKehadiran(status)}
                   className={`py-3 rounded-xl font-bold transition-all ${
                     kehadiran === status
-                      ? status === 'Hadir' ? 'bg-teal-500 text-white shadow-lg ring-2 ring-teal-200' :
-                        status === 'Izin' ? 'bg-blue-500 text-white shadow-lg ring-2 ring-blue-200' :
-                        status === 'Sakit' ? 'bg-yellow-500 text-white shadow-lg ring-2 ring-yellow-200' :
-                        'bg-red-500 text-white shadow-lg ring-2 ring-red-200'
-                      : 'bg-white border border-gray-200 text-gray-500 hover:bg-gray-50'
+                      ? status === 'Hadir' ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/40 ring-2 ring-teal-300/50' :
+                        status === 'Izin' ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/40 ring-2 ring-blue-300/50' :
+                        status === 'Sakit' ? 'bg-yellow-500 text-white shadow-lg shadow-yellow-500/40 ring-2 ring-yellow-300/50' :
+                        'bg-red-500 text-white shadow-lg shadow-red-500/40 ring-2 ring-red-300/50'
+                      : 'bg-white/10 backdrop-blur border border-white/20 text-white/70 hover:bg-white/20 hover:text-white'
                   }`}
                 >
                   {status}
@@ -1294,52 +1520,86 @@ export default function SetoranUnifiedPage() {
             </div>
           </div>
 
-          <div className={`space-y-6 transition-all duration-500 ${kehadiran !== 'Hadir' ? 'opacity-50 pointer-events-none grayscale' : ''}`}>
-            <div className="flex items-center justify-between border-b border-gray-200 pb-2">
-              <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
-                <BookOpen size={20} className="text-teal-600" /> 3. Data Setoran
+          <div className={`space-y-6 transition-all duration-500 ${kehadiran !== 'Hadir' ? 'opacity-40 pointer-events-none grayscale' : ''}`}>
+            <div className="flex items-center justify-between border-b border-white/10 pb-2">
+              <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                <BookOpen size={20} className="text-teal-300" /> 3. Data Setoran
               </h2>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-              <button
-                type="button"
-                onClick={() => setZiyadahOpen(true)}
-                className={`py-3 rounded-2xl font-bold transition-all duration-300 flex flex-col items-center justify-center gap-1 ${
-                  ziyadah.juz !== ''
-                    ? 'bg-gradient-to-br from-teal-400 to-teal-600 text-white shadow-lg shadow-teal-500/40 ring-4 ring-teal-100 scale-[1.02]'
-                    : 'bg-white/80 backdrop-blur border border-gray-200 text-gray-500 hover:bg-white hover:shadow-md'
-                }`}
-              >
-                <BookOpen size={20} className={ziyadah.juz !== '' ? 'text-white' : 'text-gray-400'} />
-                Ziyadah (Baru)
-              </button>
+              {selectedSantriObj?.is_tahsin && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setTahsinOpen(true)}
+                    className={`py-3 rounded-2xl font-bold transition-all duration-300 flex flex-col items-center justify-center gap-1 ${
+                      tahsin.buku !== ''
+                        ? 'bg-gradient-to-br from-blue-400 to-indigo-600 text-white shadow-lg shadow-blue-500/40 ring-4 ring-blue-100 scale-[1.02]'
+                        : 'bg-white/80 backdrop-blur border border-gray-200 text-gray-500 hover:bg-white hover:shadow-md'
+                    }`}
+                  >
+                    <BookA size={20} className={tahsin.buku !== '' ? 'text-white' : 'text-gray-400'} />
+                    Tahsin
+                  </button>
 
-              <button
-                type="button"
-                onClick={() => setMurojaahOpen(true)}
-                className={`py-3 rounded-2xl font-bold transition-all duration-300 flex flex-col items-center justify-center gap-1 ${
-                  murojaah.juz !== ''
-                    ? 'bg-gradient-to-br from-blue-400 to-blue-600 text-white shadow-lg shadow-blue-500/40 ring-4 ring-blue-100 scale-[1.02]'
-                    : 'bg-white/80 backdrop-blur border border-gray-200 text-gray-500 hover:bg-white hover:shadow-md'
-                }`}
-              >
-                <BookMarked size={20} className={murojaah.juz !== '' ? 'text-white' : 'text-gray-400'} />
-                Muroja'ah (Ulang)
-              </button>
+                  <button
+                    type="button"
+                    onClick={() => setTilawahOpen(true)}
+                    className={`py-3 rounded-2xl font-bold transition-all duration-300 flex flex-col items-center justify-center gap-1 ${
+                      tilawah.juz !== ''
+                        ? 'bg-gradient-to-br from-cyan-400 to-cyan-600 text-white shadow-lg shadow-cyan-500/40 ring-4 ring-cyan-100 scale-[1.02]'
+                        : 'bg-white/80 backdrop-blur border border-gray-200 text-gray-500 hover:bg-white hover:shadow-md'
+                    }`}
+                  >
+                    <BookOpenText size={20} className={tilawah.juz !== '' ? 'text-white' : 'text-gray-400'} />
+                    Tilawah
+                  </button>
+                </>
+              )}
 
-              <button
-                type="button"
-                onClick={() => setTasmiOpen(true)}
-                className={`py-3 rounded-2xl font-bold transition-all duration-300 flex flex-col items-center justify-center gap-1 ${
-                  tasmi.juz !== ''
-                    ? 'bg-gradient-to-br from-purple-400 to-purple-600 text-white shadow-lg shadow-purple-500/40 ring-4 ring-purple-100 scale-[1.02]'
-                    : 'bg-white/80 backdrop-blur border border-gray-200 text-gray-500 hover:bg-white hover:shadow-md'
-                }`}
-              >
-                <Mic size={20} className={tasmi.juz !== '' ? 'text-white' : 'text-gray-400'} />
-                Tasmi' (Ujian)
-              </button>
+              {!selectedSantriObj?.is_tahsin && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setZiyadahOpen(true)}
+                    className={`py-3 rounded-2xl font-bold transition-all duration-300 flex flex-col items-center justify-center gap-1 ${
+                      ziyadah.juz !== ''
+                        ? 'bg-gradient-to-br from-teal-400 to-teal-600 text-white shadow-lg shadow-teal-500/40 ring-4 ring-teal-100 scale-[1.02]'
+                        : 'bg-white/80 backdrop-blur border border-gray-200 text-gray-500 hover:bg-white hover:shadow-md'
+                    }`}
+                  >
+                    <BookOpen size={20} className={ziyadah.juz !== '' ? 'text-white' : 'text-gray-400'} />
+                    Ziyadah (Baru)
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setMurojaahOpen(true)}
+                    className={`py-3 rounded-2xl font-bold transition-all duration-300 flex flex-col items-center justify-center gap-1 ${
+                      murojaah.juz !== ''
+                        ? 'bg-gradient-to-br from-blue-400 to-blue-600 text-white shadow-lg shadow-blue-500/40 ring-4 ring-blue-100 scale-[1.02]'
+                        : 'bg-white/80 backdrop-blur border border-gray-200 text-gray-500 hover:bg-white hover:shadow-md'
+                    }`}
+                  >
+                    <BookMarked size={20} className={murojaah.juz !== '' ? 'text-white' : 'text-gray-400'} />
+                    Muroja'ah (Ulang)
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setTasmiOpen(true)}
+                    className={`py-3 rounded-2xl font-bold transition-all duration-300 flex flex-col items-center justify-center gap-1 ${
+                      tasmi.juz !== ''
+                        ? 'bg-gradient-to-br from-purple-400 to-purple-600 text-white shadow-lg shadow-purple-500/40 ring-4 ring-purple-100 scale-[1.02]'
+                        : 'bg-white/80 backdrop-blur border border-gray-200 text-gray-500 hover:bg-white hover:shadow-md'
+                    }`}
+                  >
+                    <Mic size={20} className={tasmi.juz !== '' ? 'text-white' : 'text-gray-400'} />
+                    Tasmi' (Ujian)
+                  </button>
+                </>
+              )}
 
               <button
                 type="button"
@@ -1471,6 +1731,14 @@ export default function SetoranUnifiedPage() {
         colorFrom="from-purple-500" colorTo="to-purple-600" borderColor="border-purple-200" lightBg="bg-purple-50/50" ringColor="focus:ring-purple-500"
       />
 
+      <SubSetoranCard 
+        title="Tilawah" icon={BookOpenText}
+        enabled={tilawahOpen} setEnabled={setTilawahOpen}
+        data={tilawah} setData={setTilawah} masterQuran={masterQuran}
+        hidePredikat={true}
+        colorFrom="from-cyan-500" colorTo="to-cyan-600" borderColor="border-cyan-200" lightBg="bg-cyan-50/50" ringColor="focus:ring-cyan-500"
+      />
+
       <AyatPilihanCard 
         enabled={ayatPilihanOpen} setEnabled={setAyatPilihanOpen}
         data={ayatPilihan} setData={setAyatPilihan}
@@ -1486,12 +1754,20 @@ export default function SetoranUnifiedPage() {
         data={hadits} setData={setHadits} targetKelas={targetKelas}
       />
 
+      <TahsinCard 
+        enabled={tahsinOpen} setEnabled={setTahsinOpen}
+        data={tahsin} setData={setTahsin}
+      />
+
       {/* EDIT MODAL DYNAMIC RENDERING */}
       {editingRecord && editingRecord.jenis_setoran === 'hafalan_baru' && (
         <SubSetoranCard title="Edit Ziyadah" icon={Pen} enabled={isEditModalOpen} setEnabled={setIsEditModalOpen} data={editData} setData={setEditData} masterQuran={masterQuran} colorFrom="from-teal-500" colorTo="to-teal-600" borderColor="border-teal-200" lightBg="bg-teal-50/50" ringColor="focus:ring-teal-500" onSave={handleUpdateSetoran} />
       )}
       {editingRecord && editingRecord.jenis_setoran === 'murojaah' && (
         <SubSetoranCard title="Edit Muroja'ah" icon={Pen} enabled={isEditModalOpen} setEnabled={setIsEditModalOpen} data={editData} setData={setEditData} masterQuran={masterQuran} colorFrom="from-blue-500" colorTo="to-blue-600" borderColor="border-blue-200" lightBg="bg-blue-50/50" ringColor="focus:ring-blue-500" onSave={handleUpdateSetoran} />
+      )}
+      {editingRecord && editingRecord.jenis_setoran === 'tilawah' && (
+        <SubSetoranCard title="Edit Tilawah" icon={Pen} enabled={isEditModalOpen} setEnabled={setIsEditModalOpen} data={editData} setData={setEditData} masterQuran={masterQuran} hidePredikat={true} colorFrom="from-cyan-500" colorTo="to-cyan-600" borderColor="border-cyan-200" lightBg="bg-cyan-50/50" ringColor="focus:ring-cyan-500" onSave={handleUpdateSetoran} />
       )}
       {editingRecord && editingRecord.jenis_setoran === 'tasmi' && (
         <SubSetoranCard title="Edit Tasmi'" icon={Pen} enabled={isEditModalOpen} setEnabled={setIsEditModalOpen} data={editData} setData={setEditData} masterQuran={masterQuran} showFractions={true} colorFrom="from-purple-500" colorTo="to-purple-600" borderColor="border-purple-200" lightBg="bg-purple-50/50" ringColor="focus:ring-purple-500" onSave={handleUpdateSetoran} />
@@ -1504,6 +1780,9 @@ export default function SetoranUnifiedPage() {
       )}
       {editingRecord && editingRecord.jenis_setoran === 'hadits' && (
         <HaditsCard enabled={isEditModalOpen} setEnabled={setIsEditModalOpen} data={editData} setData={setEditData} targetKelas={targetKelas} onSave={handleUpdateSetoran} />
+      )}
+      {editingRecord && editingRecord.jenis_setoran === 'tahsin' && (
+        <TahsinCard enabled={isEditModalOpen} setEnabled={setIsEditModalOpen} data={editData} setData={setEditData} onSave={handleUpdateSetoran} />
       )}
     </div>
   )

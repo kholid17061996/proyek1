@@ -100,6 +100,8 @@ export default function OrtuSantriDetailPage() {
   const pilihanCount = riwayatCapaian.filter(c => c.jenis_setoran === 'ayat_pilihan').length
   const haditsCount = riwayatCapaian.filter(c => c.jenis_setoran === 'hadits').length
   const doaCount = riwayatCapaian.filter(c => c.jenis_setoran === 'doa_harian').length
+  const tahsinCount = riwayatCapaian.filter(c => c.jenis_setoran === 'tahsin').length
+  const tilawahCount = riwayatCapaian.filter(c => c.jenis_setoran === 'tilawah').length
 
   const stats = useMemo(() => {
     const tZiyadah = targetSantri?.target_ziyadah || 5;
@@ -228,16 +230,18 @@ export default function OrtuSantriDetailPage() {
 
   const recentMaterials = useMemo(() => {
     const latest: any = {
-      Ziyadah: null, Murojaah: null, Tasmi: null, Pilihan: null, Hadits: null, Doa: null
+      Ziyadah: null, Murojaah: null, Tasmi: null, Pilihan: null, Hadits: null, Doa: null, Tahsin: null, Tilawah: null
     };
     
     for (const item of riwayatCapaian) {
       if (!latest.Ziyadah && item.jenis_setoran === 'Ziyadah') latest.Ziyadah = `QS. ${item.surat_mulai || ''} ${item.ayat_mulai || ''}`;
       if (!latest.Murojaah && item.jenis_setoran === 'Murojaah') latest.Murojaah = `Juz ${item.juz || ''}`;
       if (!latest.Tasmi && item.jenis_setoran === 'Tasmi') latest.Tasmi = `Juz ${item.juz || ''}`;
-      if (!latest.Pilihan && item.jenis_setoran === 'Pilihan') latest.Pilihan = `Ayat Pilihan (Surat ${item.surat_mulai || ''})`;
-      if (!latest.Hadits && item.jenis_setoran === 'Hadits') latest.Hadits = `Hadits ke-${item.surat_mulai || ''}`;
-      if (!latest.Doa && item.jenis_setoran === 'Doa') latest.Doa = `Do'a ke-${item.surat_mulai || ''}`;
+      if (!latest.Pilihan && (item.jenis_setoran === 'Pilihan' || item.jenis_setoran === 'ayat_pilihan')) latest.Pilihan = `Ayat Pilihan (Surat ${item.surat_mulai || ''})`;
+      if (!latest.Hadits && (item.jenis_setoran === 'Hadits' || item.jenis_setoran === 'hadits')) latest.Hadits = `Hadits ke-${item.surat_mulai || ''}`;
+      if (!latest.Doa && (item.jenis_setoran === 'Doa' || item.jenis_setoran === 'doa_harian')) latest.Doa = `Do'a ke-${item.surat_mulai || ''}`;
+      if (!latest.Tahsin && (item.jenis_setoran === 'Tahsin' || item.jenis_setoran === 'tahsin')) latest.Tahsin = `${item.surat_mulai || ''} Hal ${item.ayat_mulai || ''}`;
+      if (!latest.Tilawah && (item.jenis_setoran === 'Tilawah' || item.jenis_setoran === 'tilawah')) latest.Tilawah = `QS. ${item.surat_mulai || ''} ${item.ayat_mulai || ''}-${item.ayat_selesai || ''}`;
     }
     return latest;
   }, [riwayatCapaian]);

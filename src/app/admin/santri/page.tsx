@@ -18,6 +18,7 @@ type Santri = {
   status: string
   kelas: { nama: string }
   pengajar: { nama: string }
+  is_tahsin?: boolean
 }
 
 type Kelas = { id: string, nama: string }
@@ -50,6 +51,7 @@ export default function DataSantriPage() {
   const [pengajarId, setPengajarId] = useState('')
   const [tanggalMasuk, setTanggalMasuk] = useState('')
   const [status, setStatus] = useState('aktif')
+  const [isTahsin, setIsTahsin] = useState(false)
   
   // Hubungan Ortu state (hanya untuk create perdana)
   const [ortuId, setOrtuId] = useState('')
@@ -96,6 +98,7 @@ export default function DataSantriPage() {
       setPengajarId(santri.pengajar_id || '')
       setTanggalMasuk(santri.tanggal_masuk || '')
       setStatus(santri.status)
+      setIsTahsin(!!santri.is_tahsin)
       setOrtuId('')
     } else {
       setEditId(null)
@@ -106,6 +109,7 @@ export default function DataSantriPage() {
       setPengajarId('')
       setTanggalMasuk(new Date().toISOString().split('T')[0])
       setStatus('aktif')
+      setIsTahsin(false)
       setOrtuId('')
       setHubunganOrtu('Ayah')
     }
@@ -128,7 +132,8 @@ export default function DataSantriPage() {
       kelas_id: kelasId || null,
       pengajar_id: pengajarId || null,
       tanggal_masuk: tanggalMasuk || null,
-      status
+      status,
+      is_tahsin: isTahsin
     }
 
     if (editId) {
@@ -557,6 +562,21 @@ export default function DataSantriPage() {
                   />
                 </div>
               </div>
+
+                {/* Checkbox Tahsin */}
+                <div className="flex items-center gap-3 bg-gray-50 p-4 rounded-xl border border-gray-100 mt-2">
+                  <input
+                    type="checkbox"
+                    id="is_tahsin"
+                    checked={isTahsin}
+                    onChange={(e) => setIsTahsin(e.target.checked)}
+                    className="w-5 h-5 text-teal-600 border-gray-300 rounded focus:ring-teal-500 cursor-pointer"
+                  />
+                  <label htmlFor="is_tahsin" className="text-sm font-bold text-gray-700 cursor-pointer select-none">
+                    Siswa Program Tahsin
+                    <span className="block text-xs font-normal text-gray-500">Centang jika siswa ini adalah peserta khusus kelas Tahsin.</span>
+                  </label>
+                </div>
 
               {/* Seksi Akademik */}
               <div className="space-y-4">
