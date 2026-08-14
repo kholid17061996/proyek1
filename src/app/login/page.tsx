@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/utils/supabase/client'
 import { BookOpen, Loader2 } from 'lucide-react'
+import BackgroundEffects from '@/components/BackgroundEffects'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -40,8 +41,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden">
+    <div className="min-h-screen bg-slate flex items-center justify-center p-4 relative overflow-hidden">
+      <BackgroundEffects />
+      
+      <div className="max-w-md w-full bg-white/95 backdrop-blur-3xl rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.1)] border border-white overflow-hidden relative z-10">
         <div className="bg-slate p-8 text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emas text-slate mb-4">
             <BookOpen size={32} />

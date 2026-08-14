@@ -21,6 +21,7 @@ const config: Config = {
       animation: {
         'fade-in': 'fadeIn 1s ease-out forwards',
         'float-up': 'floatUp 15s linear infinite',
+        'meteor-arc': 'meteorArc 8s linear infinite',
       },
       keyframes: {
         fadeIn: {
@@ -29,9 +30,16 @@ const config: Config = {
         },
         floatUp: {
           '0%': { transform: 'translateY(100vh) scale(0)', opacity: '0' },
-          '10%': { opacity: '0.5' },
-          '90%': { opacity: '0.5' },
+          '10%': { opacity: '0.9' },
+          '90%': { opacity: '0.9' },
           '100%': { transform: 'translateY(-100px) scale(1)', opacity: '0' },
+        },
+        meteorArc: {
+          '0%': { transform: 'translate(-10vw, 110vh) rotate(-45deg) scale(0.5)' },
+          '20%': { transform: 'translate(14vw, 50vh) rotate(-25deg) scale(1)' },
+          '50%': { transform: 'translate(50vw, 15vh) rotate(0deg) scale(1.5)' },
+          '80%': { transform: 'translate(86vw, 50vh) rotate(25deg) scale(1)' },
+          '100%': { transform: 'translate(110vw, 110vh) rotate(45deg) scale(0.5)' },
         }
       }
     },
