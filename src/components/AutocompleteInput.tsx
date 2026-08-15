@@ -45,6 +45,15 @@ export default function AutocompleteInput({
     }
   }
 
+  const handleBlur = () => {
+    // Di HP, menekan 'Next' sering kali tidak mengirimkan e.key = 'Enter', 
+    // melainkan langsung memindahkan fokus (blur). 
+    // Jadi saat kehilangan fokus, jika ada suggestion, kita otomatis lengkapi.
+    if (suggestion && suggestion !== value) {
+      onChange(suggestion)
+    }
+  }
+
   // Combine standard classes with custom ones
   const baseWrapperClass = "relative flex items-center w-full"
   
@@ -68,6 +77,7 @@ export default function AutocompleteInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
+        onBlur={handleBlur}
         placeholder={placeholder}
         className={`relative z-10 w-full px-5 py-3.5 bg-transparent border border-transparent focus:border-emas focus:ring-2 focus:ring-emas rounded-2xl outline-none transition-all placeholder:text-gray-400 font-bold text-left ${className}`}
       />

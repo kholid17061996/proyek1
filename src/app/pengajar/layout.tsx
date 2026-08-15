@@ -53,21 +53,10 @@ export default function PengajarLayout({
     <div className="relative h-screen w-screen flex bg-slate overflow-hidden">
       <BackgroundEffects />
 
-      {/* Mobile Sidebar Overlay */}
-      {sidebarOpen && (
-        <div 
-          className="fixed inset-0 z-40 bg-gray-900/60 backdrop-blur-sm lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
-      {/* Sidebar - Glassmorphism */}
+      {/* Sidebar - Desktop Only (Glassmorphism) */}
       <div className={`
-        fixed inset-y-0 left-0 z-50 bg-white/10 backdrop-blur-2xl border-r shadow-[8px_0_32px_rgba(0,0,0,0.1)] transition-all duration-500 ease-in-out lg:static lg:h-screen flex flex-col overflow-hidden whitespace-nowrap
-        ${sidebarOpen 
-          ? 'w-72 translate-x-0 border-white/20 opacity-100' 
-          : 'w-72 -translate-x-full lg:translate-x-0 lg:w-20 border-white/20 opacity-0 lg:opacity-100'
-        }
+        hidden lg:flex inset-y-0 left-0 z-50 bg-white/10 backdrop-blur-2xl border-r shadow-[8px_0_32px_rgba(0,0,0,0.1)] transition-all duration-500 ease-in-out static h-screen flex-col overflow-hidden whitespace-nowrap
+        ${sidebarOpen ? 'w-72 border-white/20 opacity-100' : 'w-20 border-white/20 opacity-100'}
       `}>
         <div className={`flex items-center h-20 border-b border-white/10 bg-white/5 transition-all duration-300 ${sidebarOpen ? 'justify-between px-6 min-w-[18rem]' : 'justify-center w-20'}`}>
           <div className={`flex items-center gap-3 ${sidebarOpen ? '' : 'justify-center'}`}>
@@ -93,7 +82,6 @@ export default function PengajarLayout({
                 <Link
                   key={item.name}
                   href={item.href}
-                  onClick={() => setSidebarOpen(false)}
                   className={`flex items-center rounded-xl transition-all duration-300 font-bold ${
                     sidebarOpen ? 'gap-3 px-4 py-3' : 'justify-center p-3 w-12 mx-auto'
                   } ${
@@ -126,17 +114,17 @@ export default function PengajarLayout({
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col h-screen min-w-0 overflow-hidden relative z-10 transition-all duration-500">
+      <div className="flex-1 flex flex-col h-screen min-w-0 overflow-hidden relative z-10 transition-all duration-500 pb-[72px] lg:pb-0">
         {/* Top Header - Glassmorphism */}
         <header className="h-20 shrink-0 bg-white/10 backdrop-blur-xl border-b border-white/20 shadow-sm flex items-center justify-between px-6 lg:px-10 z-30">
           <div className="flex items-center gap-4">
             <button 
-              className={`text-white hover:text-teal-300 transition-colors ${sidebarOpen ? 'lg:hidden' : 'block'}`}
+              className={`text-white hover:text-teal-300 transition-colors hidden lg:block`}
               onClick={() => setSidebarOpen(true)}
             >
-              <Menu size={24} />
+              {!sidebarOpen && <Menu size={24} />}
             </button>
-            <div className="hidden lg:block">
+            <div>
               <h2 className="text-xl font-bold text-white tracking-wide">Mutaba'ah <span className="text-teal-300 font-light">Tahfidz</span></h2>
             </div>
           </div>
@@ -195,9 +183,41 @@ export default function PengajarLayout({
 
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto p-6 lg:p-10 z-10">
-          {children}
+          <div className="bg-white/10 backdrop-blur-2xl rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.1)] border border-white/20 p-6 min-h-full">
+            {children}
+          </div>
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation - Glassmorphism */}
+      <nav className="lg:hidden fixed bottom-0 left-0 w-full bg-slate/80 backdrop-blur-3xl border-t border-white/20 shadow-[0_-8px_32px_rgba(0,0,0,0.2)] z-50 flex items-center justify-around px-2 py-3 pb-safe">
+        {navigation.map((item) => {
+          const isActive = pathname === item.href
+          const Icon = item.icon
+          // Singkat nama menu agar muat di HP
+          let shortName = item.name
+          if (shortName === 'Input Mutaba\'ah Harian') shortName = 'Mutaba\'ah'
+          if (shortName === 'Target Hafalan') shortName = 'Target'
+          if (shortName === 'Laporan Pekanan') shortName = 'Laporan'
+          
+          return (
+            <Link
+              key={item.name}
+              href={item.href}
+              className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all duration-300 flex-1 ${
+                isActive ? 'text-teal-300' : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <div className={`relative ${isActive ? '-translate-y-1' : ''} transition-transform`}>
+                <Icon size={24} className={isActive ? 'drop-shadow-[0_0_8px_rgba(45,212,191,0.5)]' : ''} />
+              </div>
+              <span className={`text-[10px] font-bold tracking-wide ${isActive ? 'opacity-100' : 'opacity-70'} text-center leading-tight`}>
+                {shortName}
+              </span>
+            </Link>
+          )
+        })}
+      </nav>
     </div>
   )
 }
