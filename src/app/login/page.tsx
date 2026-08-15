@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/utils/supabase/client'
-import { BookOpen, Loader2 } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 import BackgroundEffects from '@/components/BackgroundEffects'
 
 export default function LoginPage() {
@@ -46,8 +46,21 @@ export default function LoginPage() {
       
       <div className="max-w-md w-full bg-white/95 backdrop-blur-3xl rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.1)] border border-white overflow-hidden relative z-10">
         <div className="bg-slate p-8 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emas text-slate mb-4">
-            <BookOpen size={32} />
+          <div className="flex flex-col items-center gap-4 mb-4">
+            {/* Logo Utama */}
+            <div className="w-20 h-20 drop-shadow-lg flex items-center justify-center">
+              <img src="https://i.ibb.co.com/7JwV4rFL/Logo-Balon-Kreatif.png" alt="Logo" className="w-full h-full object-contain" />
+            </div>
+            
+            {/* 2 Logo Tambahan */}
+            <div className="flex items-center justify-center gap-6 mt-1">
+              <div className="w-16 h-16 drop-shadow-md flex items-center justify-center">
+                <img src="https://i.ibb.co.com/xqG6kNXc/Logo-SMP-Kreatif-MUDA.png" alt="Logo SMP Kreatif" className="w-full h-full object-contain" />
+              </div>
+              <div className="w-16 h-16 drop-shadow-md flex items-center justify-center">
+                <img src="https://i.ibb.co.com/n8tzc3HQ/Logo-KMBS-0.png" alt="Logo KMBS" className="w-full h-full object-contain scale-[1.35]" />
+              </div>
+            </div>
           </div>
           <h1 className="text-2xl font-bold text-white">Mutaba'ah Tahfidz</h1>
           <p className="text-slate-200 mt-2">Login Admin & Pengajar</p>

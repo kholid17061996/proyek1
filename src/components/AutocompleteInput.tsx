@@ -39,7 +39,7 @@ export default function AutocompleteInput({
   }, [value, options])
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if ((e.key === 'Tab' || e.key === 'ArrowRight') && suggestion && suggestion !== value) {
+    if ((e.key === 'Tab' || e.key === 'ArrowRight' || e.key === 'Enter') && suggestion && suggestion !== value) {
       e.preventDefault()
       onChange(suggestion)
     }

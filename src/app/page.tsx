@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/utils/supabase/client'
 import AutocompleteInput from '@/components/AutocompleteInput'
 import { searchSantriAction, getAllSantriNamesAction, getAllUserEmailsAction } from '@/app/actions/santri'
-import { BookOpen, Loader2, Globe, Shield, Users, UserCheck } from 'lucide-react'
+import { Loader2, Globe, Shield, Users, UserCheck } from 'lucide-react'
 import BackgroundEffects from '@/components/BackgroundEffects'
 
 export default function Home() {
@@ -120,21 +120,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* Top Navigation / Branding */}
-      <div className={`absolute top-0 w-full p-8 flex justify-between items-center transition-opacity duration-1000 z-20 ${isLoaded && !isExiting ? 'opacity-100' : 'opacity-0'}`}>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-slate shadow-lg border border-gray-100">
-            <BookOpen size={24} strokeWidth={2.5} />
-          </div>
-          <span className="text-white font-bold text-xl tracking-wide drop-shadow-md">Mutaba'ah</span>
-        </div>
-        
-        {/* Language Selector Dummy */}
-        <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full cursor-pointer hover:bg-white/20 transition-colors border border-white/10">
-          <Globe size={18} className="text-white" />
-          <span className="text-white text-sm font-medium">EN</span>
-        </div>
-      </div>
+
 
       {/* Main Login Form Container */}
       <div className={`relative z-10 w-full max-w-[420px] p-6 transition-all duration-1000 ease-out transform ${isExiting ? 'scale-95 opacity-0' : isLoaded ? 'scale-100 opacity-100' : 'scale-110 opacity-0 translate-y-12'}`}>
@@ -142,11 +128,24 @@ export default function Home() {
         <div className="bg-white/30 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.2)] p-8 backdrop-blur-2xl border border-white/40">
           
           <div className="flex flex-col items-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-br from-slate to-[#0a3ca3] rounded-2xl flex items-center justify-center text-emas mb-6 shadow-lg">
-              <BookOpen size={32} />
+            <div className="flex flex-col items-center gap-4 mb-6">
+              {/* Logo Utama */}
+              <div className="w-24 h-24 drop-shadow-lg flex items-center justify-center">
+                <img src="https://i.ibb.co.com/7JwV4rFL/Logo-Balon-Kreatif.png" alt="Logo" className="w-full h-full object-contain" />
+              </div>
+              
+              {/* 2 Logo Tambahan */}
+              <div className="flex items-center justify-center gap-6 mt-1">
+                <div className="w-20 h-20 drop-shadow-md flex items-center justify-center">
+                  <img src="https://i.ibb.co.com/xqG6kNXc/Logo-SMP-Kreatif-MUDA.png" alt="Logo SMP Kreatif" className="w-full h-full object-contain" />
+                </div>
+                <div className="w-20 h-20 drop-shadow-md flex items-center justify-center">
+                  <img src="https://i.ibb.co.com/n8tzc3HQ/Logo-KMBS-0.png" alt="Logo KMBS" className="w-full h-full object-contain scale-[1.35]" />
+                </div>
+              </div>
             </div>
-            <h2 className="text-3xl font-bold text-slate">Sign in</h2>
-            <p className="text-slate/80 font-medium mt-2 text-sm text-center">to continue to your dashboard</p>
+            <h2 className="text-3xl font-bold text-slate">Log-In</h2>
+            <p className="text-slate/80 font-medium mt-2 text-sm text-center">untuk akses</p>
           </div>
 
           {/* Role Toggle */}
@@ -160,7 +159,7 @@ export default function Home() {
               }`}
             >
               <Shield size={16} />
-              Staf & Pengajar
+              Admin dan Asatidzah
             </button>
             <button
               onClick={() => setActiveTab('ortu')}
@@ -171,7 +170,7 @@ export default function Home() {
               }`}
             >
               <Users size={16} />
-              Parent
+              Wali Siswa
             </button>
           </div>
 
@@ -185,7 +184,7 @@ export default function Home() {
               )}
               
               <div className="space-y-1">
-                <label className="text-sm font-medium text-slate ml-1">Login</label>
+                <label className="text-sm font-medium text-slate ml-1">Email</label>
                 <AutocompleteInput
                   value={email}
                   onChange={setEmail}
@@ -212,9 +211,6 @@ export default function Home() {
                   <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-slate focus:ring-slate cursor-pointer" />
                   <span className="text-sm font-medium text-slate/80 group-hover:text-slate transition-colors">Remember me</span>
                 </label>
-                <a href="#" className="text-sm text-slate font-semibold hover:text-[#0a3ca3] transition-colors">
-                  Forgot password?
-                </a>
               </div>
 
               <button
