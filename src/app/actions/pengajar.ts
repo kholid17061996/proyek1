@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@supabase/supabase-js'
+import { getCurrentAcademicPeriod } from '@/utils/dateHelpers'
 
 const getAdminClient = () => {
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -29,11 +30,15 @@ export async function upsertTargetSantri(data: {
   target_doa: number
 }) {
   const supabaseAdmin = getAdminClient()
+  const { semester, tahun_ajaran } = getCurrentAcademicPeriod()
+  
   try {
     const { data: result, error } = await supabaseAdmin
       .from('target_santri')
       .upsert({
         santri_id: data.santri_id,
+        semester,
+        tahun_ajaran,
         target_ziyadah: data.target_ziyadah,
         target_murojaah: data.target_murojaah,
         target_tasmi: data.target_tasmi,
@@ -41,7 +46,7 @@ export async function upsertTargetSantri(data: {
         target_hadits: data.target_hadits,
         target_doa: data.target_doa,
         updated_at: new Date().toISOString()
-      }, { onConflict: 'santri_id' })
+      }, { onConflict: 'santri_id, semester, tahun_ajaran' })
 
     if (error) return { error: error.message }
     return { success: true }
@@ -80,12 +85,16 @@ export async function insertLaporanPekanan(data: {
 
 export async function getTargetSantri(santriId: string) {
   const supabaseAdmin = getAdminClient()
+  const { semester, tahun_ajaran } = getCurrentAcademicPeriod()
+  
   try {
     const { data, error } = await supabaseAdmin
       .from('target_santri')
       .select('*')
       .eq('santri_id', santriId)
-      .single()
+      .eq('semester', semester)
+      .eq('tahun_ajaran', tahun_ajaran)
+      .maybeSingle()
     return { data }
   } catch (err: any) {
     return { error: err.message }

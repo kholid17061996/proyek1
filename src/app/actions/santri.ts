@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@supabase/supabase-js'
+import { getCurrentAcademicPeriod } from '@/utils/dateHelpers'
 
 export async function searchSantriAction(query: string) {
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -56,10 +57,17 @@ export async function getSantriDashboardData(santriId: string) {
   )
 
   try {
+    const { semester, tahun_ajaran } = getCurrentAcademicPeriod()
+    
     const [resSantri, resCapaian, resTarget, resLaporan, resQuran] = await Promise.all([
       supabaseAdmin.from('santri').select('*, kelas(nama), pengajar(nama)').eq('id', santriId).single(),
       supabaseAdmin.from('setoran_hafalan').select('*').eq('santri_id', santriId).order('created_at', { ascending: false }),
-      supabaseAdmin.from('target_santri').select('*').eq('santri_id', santriId).maybeSingle(),
+      supabaseAdmin.from('target_santri')
+        .select('*')
+        .eq('santri_id', santriId)
+        .eq('semester', semester)
+        .eq('tahun_ajaran', tahun_ajaran)
+        .maybeSingle(),
       supabaseAdmin.from('laporan_pekanan').select('*').eq('santri_id', santriId).order('tanggal_laporan', { ascending: false }).limit(1).maybeSingle(),
       supabaseAdmin.from('master_quran').select('*')
     ])

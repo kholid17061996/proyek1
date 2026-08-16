@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { supabase } from '@/utils/supabase/client'
@@ -6,6 +6,10 @@ import { Loader2, Target, Save, User, BookOpen, BookMarked, Mic, Star, Heart, Bo
 import { upsertTargetSantri, getTargetSantri } from '@/app/actions/pengajar'
 import { DOA_HARIAN_DATA } from '@/utils/doaData'
 import { HADITS_DATA } from '@/utils/haditsData'
+import { getCurrentAcademicPeriod } from '@/utils/dateHelpers'
+import { getFilteredTargets } from '@/utils/targetLogic'
+import { getPengaturanBoolean } from '@/app/actions/pengaturan'
+
 
 type Toast = { type: 'success' | 'error'; message: string } | null
 type Option = { no: number; label: string }
@@ -131,6 +135,8 @@ export default function TargetPage() {
   const [santriList, setSantriList] = useState<any[]>([])
   const [selectedSantriId, setSelectedSantriId] = useState('')
   const [loadingTarget, setLoadingTarget] = useState(false)
+  
+  const { semester, tahun_ajaran } = getCurrentAcademicPeriod()
 
   // Numeric single-select fields
   const [ziyadah, setZiyadah] = useState(1)
@@ -142,6 +148,8 @@ export default function TargetPage() {
   const [selectedHadits, setSelectedHadits] = useState<number[]>([])
   const [selectedDoa, setSelectedDoa] = useState<number[]>([])
 
+  const [isToleransiKls9Active, setIsToleransiKls9Active] = useState(false)
+
   const [saving, setSaving] = useState(false)
   const [toast, setToast] = useState<Toast>(null)
 
@@ -150,7 +158,10 @@ export default function TargetPage() {
     setTimeout(() => setToast(null), 3500)
   }
 
-  useEffect(() => { fetchSantri() }, [])
+  useEffect(() => { 
+    fetchSantri()
+    getPengaturanBoolean('toleransi_kls9_smt2_2026').then(setIsToleransiKls9Active)
+  }, [])
 
   const fetchSantri = async () => {
     try {
@@ -177,14 +188,26 @@ export default function TargetPage() {
     return 7
   }, [selectedSantri])
 
-  const haditsOptions: Option[] = useMemo(
-    () => HADITS_DATA.filter(h => h.targetKelas === targetKelas).map(h => ({ no: h.no, label: h.namaHadits })),
-    [targetKelas]
-  )
-  const doaOptions: Option[] = useMemo(
-    () => DOA_HARIAN_DATA.filter(d => d.targetKelas === targetKelas).map(d => ({ no: d.no, label: d.namaDoa })),
-    [targetKelas]
-  )
+  const haditsOptions: Option[] = useMemo(() => {
+    return getFilteredTargets(
+      HADITS_DATA, 
+      targetKelas, 
+      tahun_ajaran, 
+      semester, 
+      isToleransiKls9Active
+    ).map(h => ({ no: h.no, label: h.namaHadits }));
+  }, [targetKelas, tahun_ajaran, semester, isToleransiKls9Active])
+
+  const doaOptions: Option[] = useMemo(() => {
+    return getFilteredTargets(
+      DOA_HARIAN_DATA, 
+      targetKelas, 
+      tahun_ajaran, 
+      semester, 
+      isToleransiKls9Active
+    ).map(d => ({ no: d.no, label: d.namaDoa }));
+  }, [targetKelas, tahun_ajaran, semester, isToleransiKls9Active])
+
 
   const handleSelectSantri = async (santriId: string) => {
     setSelectedSantriId(santriId)
@@ -260,7 +283,7 @@ export default function TargetPage() {
             <p className="text-white/60 text-sm mt-0.5">Pilih target untuk masing-masing santri bimbingan Anda.</p>
             <div className="mt-3 inline-flex items-center gap-2 bg-white/10 border border-white/15 px-3 py-1.5 rounded-xl text-xs text-white/70">
               <span className="w-2 h-2 rounded-full bg-teal-400 inline-block shrink-0" />
-              Target bersifat <strong className="text-white/90">permanen</strong> — berlaku terus sampai diubah manual.
+              Target berlaku untuk <strong className="text-white/90">Semester {semester} ({tahun_ajaran})</strong>.
             </div>
           </div>
         </div>

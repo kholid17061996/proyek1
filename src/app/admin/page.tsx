@@ -1,5 +1,6 @@
 import { Users, UserCircle, BookOpen, Target } from 'lucide-react'
 import { createClient } from '@supabase/supabase-js'
+import ToleransiToggle from '@/components/ToleransiToggle'
 
 const getAdminClient = () => {
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -82,6 +83,11 @@ export default async function AdminDashboard() {
       <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.1)] border border-white/20 p-8 text-center mt-8 hover:bg-white/20 transition-colors cursor-default">
         <h3 className="text-lg font-semibold text-white mb-2">Pantau Aktivitas</h3>
         <p className="text-white/80">Anda dapat melihat daftar riwayat capaian santri secara lengkap di menu "Data Santri".</p>
+      </div>
+
+      <div className="mt-8">
+        <h2 className="text-xl font-bold text-white mb-4">Pengaturan Sistem Khusus</h2>
+        <ToleransiToggle />
       </div>
     </div>
   )
